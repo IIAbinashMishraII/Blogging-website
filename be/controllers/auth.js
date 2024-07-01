@@ -3,37 +3,32 @@ const { v4: uuidv4 } = require("uuid");
 const JWT = require("jsonwebtoken");
 const { expressjwt: jwt } = require("express-jwt");
 
-exports.signup = async(req, res) => {
-  User.findOne({ email: req.body.email })
-    .then((user) => {
-      if (user) {
-        return res.status(400).json({
-          error: "Email is taken",
-        });
-      }
+exports.signup = async (req, res) => {
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (user) {
+      return res.status(400).json({
+        error: "Email is taken",
+      });
+    }
 
-      const { name, email, password } = req.body;
-      let username = uuidv4();
-      let profile = `${process.env.CLIENT_URL}/profile/${username}`;
+    const { name, email, password } = req.body;
+    let username = uuidv4();
+    let profile = `${process.env.CLIENT_URL}/profile/${username}`;
 
-      let newUser = new User({ name, email, password, profile, username });
-      return newUser.save();
-    })
-    .then((success) => {
-      if (success) {
-        return res.json({
-          message: "Signup success! Please Signin",
-          // user: success,
-        });
-      }
-    })
-    .catch((err) => {
-      if (!res.headersSent) {
-        return res.status(400).json({
-          error: err.message,
-        });
-      }
+    let newUser = new User({ name, email, password, profile, username });
+    await newUser.save();
+    return res.json({
+      message: "Signup success! Please Signin",
+      user: newUser,
     });
+  } catch (err) {
+    if (!res.headersSent) {
+      return res.status(400).json({
+        error: err.message,
+      });
+    }
+  }
 };
 
 exports.signin = async (req, res) => {
@@ -63,15 +58,15 @@ exports.signin = async (req, res) => {
   });
 };
 
-exports.signout = async (req,res) => {
-  res.clearCookie("token")
+exports.signout = async (req, res) => {
+  res.clearCookie("token");
   res.json({
-    message: ' Signout success'
-  })
-}
+    message: " Signout success",
+  });
+};
 
 exports.requireSignin = jwt({
   secret: process.env.JWT_SECRET,
   algorithms: ["HS256"],
   userProperty: "auth",
-})
+});
