@@ -1,9 +1,9 @@
 const User = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
-const jwt = require("jsonwebtoken");
-const expressJwt = require("express-jwt");
+const JWT = require("jsonwebtoken");
+const { expressjwt: jwt } = require("express-jwt");
 
-exports.signup = (req, res) => {
+exports.signup = async(req, res) => {
   User.findOne({ email: req.body.email })
     .then((user) => {
       if (user) {
@@ -51,7 +51,7 @@ exports.signin = async (req, res) => {
     });
   }
 
-  const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+  const token = JWT.sign({ _id: user._id }, process.env.JWT_SECRET, {
     expiresIn: "1d",
   });
 
@@ -62,3 +62,16 @@ exports.signin = async (req, res) => {
     user: { _id, name, username, email: userEmail, role },
   });
 };
+
+exports.signout = async (req,res) => {
+  res.clearCookie("token")
+  res.json({
+    message: ' Signout success'
+  })
+}
+
+exports.requireSignin = jwt({
+  secret: process.env.JWT_SECRET,
+  algorithms: ["HS256"],
+  userProperty: "auth",
+})
