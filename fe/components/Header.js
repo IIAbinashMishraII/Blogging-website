@@ -79,7 +79,7 @@ function DrawerAppBar(props) {
                 component="span"
                 sx={{
                   color: "white",
-                  textDecoration: "none!important",
+                  textDecoration: "none",
                 }}
               >
                 {APP_NAME}
@@ -89,8 +89,8 @@ function DrawerAppBar(props) {
 
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item, index) => (
-              <Link href={navRoutes[index]}>
-                <Button key={item} sx={{ color: "#fff" }}>
+              <Link href={navRoutes[index]} key={item} passHref>
+                <Button sx={{ color: "#fff" }}>
                   {item}
                 </Button>
               </Link>
@@ -122,5 +122,9 @@ function DrawerAppBar(props) {
     </Box>
   );
 }
+
+DrawerAppBar.propTypes = {
+  window: PropTypes.func,
+};
 
 export default DrawerAppBar;
