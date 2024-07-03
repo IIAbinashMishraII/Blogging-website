@@ -1,13 +1,13 @@
-import Layout from "../components/layout";
 import Link from "next/link";
+import Layout from "../components/layout";
 
-const Index = () => {
+const Signin = () => {
   return (
     <Layout>
-      <h2>Index Page</h2>
+      <h2>Signin Page</h2>
       <Link href="/signup">Signup</Link>
     </Layout>
   );
 };
 
-export default Index;
+export default Signin;
