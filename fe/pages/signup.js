@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Layout from "../components/layout";
-import SignupComponent from "../components/auth/SignupComponent";
+import SignupComponent from "../components/auth/signupComponent";
 
 const Signup = () => {
   return (
