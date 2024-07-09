@@ -1,6 +1,9 @@
 import * as React from "react";
 import { APP_NAME } from "../config.js";
+import { useRouter } from "next/router.js";
 import Link from "next/link";
+import { signout, isAuth } from "../actions/auth.js";
+import dynamic from "next/dynamic";
 
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
@@ -25,10 +28,26 @@ const navRoutes = ["/signup", "/signin"];
 function DrawerAppBar(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const router = useRouter();
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [isClientSide, setIsClientSide] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
+  const handleNavigation = (route) => {
+    router.push(route);
+  };
+  const handleSignout = () => {
+    signout(() => {
+      router.push("/signin");
+    });
+  };
+
+  React.useEffect(() => {
+    setIsAuthenticated(isAuth());
+    setIsClientSide(true);
+  }, []);
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -43,6 +62,16 @@ function DrawerAppBar(props) {
             </ListItemButton>
           </ListItem>
         ))}
+        {isAuth() && (
+          <ListItem disablePadding>
+            <ListItemButton
+              sx={{ textAlign: "center" }}
+              onClick={handleSignout}
+            >
+              <ListItemText primary="Signout" />
+            </ListItemButton>
+          </ListItem>
+        )}
       </List>
     </Box>
   );
@@ -53,7 +82,7 @@ function DrawerAppBar(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar component="nav">
+      <AppBar component="nav" sx={{ bgcolor: "#e7e7e7" }}>
         <Toolbar>
           <IconButton
             color="inherit"
@@ -70,31 +99,40 @@ function DrawerAppBar(props) {
             component="div"
             sx={{
               flexGrow: 1,
-              display: { xs: "none", sm: "block" },
+              display: { xs: "block", sm: "block" },
             }}
           >
-            <Link href="/" passHref>
-              <Typography
-                variant="h6"
-                component="span"
-                sx={{
-                  color: "white",
-                  textDecoration: "none",
-                }}
-              >
-                {APP_NAME}
-              </Typography>
-            </Link>
+            <Typography
+              variant="h6"
+              component="span"
+              sx={{
+                color: "black",
+                fontWeight: "bold",
+                fontSize: "32px",
+                fontFamily: "Copperplate",
+                cursor: "pointer",
+              }}
+              onClick={() => handleNavigation("/")}
+            >
+              {APP_NAME}
+            </Typography>
           </Typography>
-
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
-            {navItems.map((item, index) => (
-              <Link href={navRoutes[index]} key={item} passHref>
-                <Button sx={{ color: "#fff" }}>
-                  {item}
-                </Button>
-              </Link>
-            ))}
+            {isClientSide && (
+              <>
+                {!isAuthenticated &&
+                  navItems.map((item, index) => (
+                    <Link href={navRoutes[index]} key={item} passHref>
+                      <Button sx={{ color: "black" }}>{item}</Button>
+                    </Link>
+                  ))}
+                {isAuthenticated && (
+                  <Button sx={{ color: "black" }} onClick={handleSignout}>
+                    Signout
+                  </Button>
+                )}
+              </>
+            )}
           </Box>
         </Toolbar>
       </AppBar>
