@@ -22,7 +22,7 @@ router.get("/signout", signout);
 //test
 router.get("/secret", requireSignin, (req, res) => {
   res.json({
-    message: "What are you doing here?",
+    user: req.auth,
   });
 });
 

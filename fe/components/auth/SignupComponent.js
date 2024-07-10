@@ -4,9 +4,9 @@ import Router from "next/router";
 
 const SignupComponent = () => {
   const [values, setValues] = useState({
-    name: "",
-    email: "",
-    password: "",
+    name: "test",
+    email: "test1@test.com",
+    password: "testis",
     error: "",
     loading: false,
     message: "",
@@ -96,7 +96,7 @@ const SignupComponent = () => {
           />
         </div>
         <div>
-          <button className="btn btn-primary">Signup</button>
+          <button className="btn btn-primary">Sign Up</button>
         </div>
       </form>
     );

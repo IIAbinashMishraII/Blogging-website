@@ -10,6 +10,7 @@ const app = express();
 
 const blogRoutes = require('./routes/blog.js');
 const authRoutes = require('./routes/auth.js')
+const userRoutes = require('./routes/user.js')
 //helpers
 app.use(morgan('dev'));
 app.use(bodyParser.json());
@@ -25,6 +26,7 @@ app.get('/api', (req,res) =>{
 //routes middleware
 app.use('/api',blogRoutes);
 app.use('/api', authRoutes);
+app.use('/api',userRoutes)
 
 
 //db

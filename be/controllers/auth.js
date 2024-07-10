@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const { v4: uuidv4 } = require("uuid");
 const JWT = require("jsonwebtoken");
-const { expressjwt: jwt } = require("express-jwt");
+const { expressjwt } = require("express-jwt");
 
 exports.signup = async (req, res) => {
   try {
@@ -65,8 +65,38 @@ exports.signout = async (req, res) => {
   });
 };
 
-exports.requireSignin = jwt({
+exports.requireSignin = expressjwt({
   secret: process.env.JWT_SECRET,
   algorithms: ["HS256"],
   userProperty: "auth",
 });
+
+exports.authMiddleware = async(req, res, next) => {
+  const authUserId = req.auth._id;
+  console.log(authUserId)
+  const user = await User.findById({ _id: authUserId });
+  if (!user) {
+    return res.status(400).json({
+      error: "User not found",
+    });
+  }
+  req.profile = user;
+  next();
+};
+
+exports.adminMiddleware = async (req, res, next) => {
+  const adminUserId = req.auth._id;
+  const user = await User.findById({ _id: adminUserId });
+  if (!user) {
+    return res.status(400).json({
+      error: "User not found",
+    });
+  }
+  if (user.role !== 1) {
+    return res.status(400).json({
+      error: "Access denied",
+    });
+  }
+  req.profile = user;
+  next();
+};

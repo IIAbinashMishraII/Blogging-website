@@ -4,8 +4,8 @@ import Router from "next/router";
 
 const SigninComponent = () => {
   const [values, setValues] = useState({
-    email: "",
-    password: "",
+    email: "test1@test.com",
+    password: "testis",
     error: "",
     loading: false,
     message: "",
@@ -78,7 +78,7 @@ const SigninComponent = () => {
           />
         </div>
         <div>
-          <button className="btn btn-primary">Signin</button>
+          <button className="btn btn-primary">Sign In</button>
         </div>
       </form>
     );
