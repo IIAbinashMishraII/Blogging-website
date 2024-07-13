@@ -44,6 +44,17 @@ function DrawerAppBar(props) {
     });
   };
 
+  const handleDashboard = async () => {
+    const auth = await isAuth();
+    if (auth && auth.role === 1) {
+      router.push("/admin");
+    } else if (auth && auth.role == 0) {
+      router.push("/user");
+    } else {
+      router.push("/signin");
+    }
+  };
+
   React.useEffect(() => {
     setIsAuthenticated(isAuth());
     setIsClientSide(true);
@@ -62,15 +73,25 @@ function DrawerAppBar(props) {
             </ListItemButton>
           </ListItem>
         ))}
-        {isAuth() && (
-          <ListItem disablePadding>
-            <ListItemButton
-              sx={{ textAlign: "center" }}
-              onClick={handleSignout}
-            >
-              <ListItemText primary="Signout" />
-            </ListItemButton>
-          </ListItem>
+        {isAuthenticated && (
+          <>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={handleSignout}
+              >
+                <ListItemText primary="Signout" />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton
+                sx={{ textAlign: "center" }}
+                onClick={handleDashboard}
+              >
+                <ListItemText primary="Dashboard" />
+              </ListItemButton>
+            </ListItem>
+          </>
         )}
       </List>
     </Box>
@@ -127,9 +148,14 @@ function DrawerAppBar(props) {
                     </Link>
                   ))}
                 {isAuthenticated && (
-                  <Button sx={{ color: "black" }} onClick={handleSignout}>
-                    Signout
-                  </Button>
+                  <>
+                    <Button sx={{ color: "black" }} onClick={handleSignout}>
+                      Signout
+                    </Button>
+                    <Button sx={{ color: "black" }} onClick={handleDashboard}>
+                      {isAuth().name}'s Dashboard
+                    </Button>
+                  </>
                 )}
               </>
             )}
