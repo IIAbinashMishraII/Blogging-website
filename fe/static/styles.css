@@ -1,0 +1,4 @@
+.loadingBar .MuiLinearProgress-bar {
+  color: rgb(255, 0, 0);
+  height: 14px;
+}

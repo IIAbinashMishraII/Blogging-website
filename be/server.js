@@ -12,6 +12,7 @@ const blogRoutes = require("./routes/blog.js");
 const authRoutes = require("./routes/auth.js");
 const userRoutes = require("./routes/user.js");
 const categoryRoutes = require("./routes/category.js");
+const tagRoutes = require("./routes/tag.js");
 //helpers
 app.use(morgan("dev"));
 app.use(bodyParser.json());
@@ -29,6 +30,7 @@ app.use("/api", blogRoutes);
 app.use("/api", authRoutes);
 app.use("/api", userRoutes);
 app.use("/api", categoryRoutes);
+app.use("/api", tagRoutes);
 
 //db
 mongoose

@@ -3,8 +3,6 @@ import { APP_NAME } from "../config.js";
 import { useRouter } from "next/router.js";
 import Link from "next/link";
 import { signout, isAuth } from "../actions/auth.js";
-import dynamic from "next/dynamic";
-
 import PropTypes from "prop-types";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -20,6 +18,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import LinearProgress from "@mui/material/LinearProgress";
 
 const drawerWidth = 240;
 const navItems = ["Signup", "Signin"];
@@ -31,25 +30,23 @@ function DrawerAppBar(props) {
   const router = useRouter();
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
   const [isClientSide, setIsClientSide] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
   };
-  const handleNavigation = (route) => {
-    router.push(route);
-  };
   const handleSignout = () => {
     signout(() => {
+      setIsAuthenticated(false);
       router.push("/signin");
     });
   };
 
   const handleDashboard = async () => {
     const auth = await isAuth();
-    if (auth && auth.role === 1) {
-      router.push("/admin");
-    } else if (auth && auth.role == 0) {
-      router.push("/user");
+    if (auth) {
+      const role = auth.role === 1 ? "admin" : "user";
+      router.push(`/${role}`);
     } else {
       router.push("/signin");
     }
@@ -59,6 +56,21 @@ function DrawerAppBar(props) {
     setIsAuthenticated(isAuth());
     setIsClientSide(true);
   }, []);
+
+  React.useEffect(() => {
+    const handleRouteChange = () => setLoading(true);
+    const handleRouteComplete = () => setLoading(false);
+
+    router.events.on("routeChangeStart", handleRouteChange);
+    router.events.on("routeChangeComplete", handleRouteComplete);
+    router.events.on("routeChangeError", handleRouteComplete);
+
+    return () => {
+      router.events.off("routeChangeStart", handleRouteChange);
+      router.events.off("routeChangeComplete", handleRouteComplete);
+      router.events.off("routeChangeError", handleRouteComplete);
+    };
+  }, [router]);
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
@@ -103,6 +115,11 @@ function DrawerAppBar(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+      {loading && (
+        <LinearProgress className="loadingBar"
+          sx={{ width: "100%", position: "fixed", top: 0, zIndex: 1301 }}
+        />
+      )}
       <AppBar component="nav" sx={{ bgcolor: "#e7e7e7" }}>
         <Toolbar>
           <IconButton
@@ -133,7 +150,7 @@ function DrawerAppBar(props) {
                 fontFamily: "Copperplate",
                 cursor: "pointer",
               }}
-              onClick={() => handleNavigation("/")}
+              onClick={() => router.push("/")}
             >
               {APP_NAME}
             </Typography>
