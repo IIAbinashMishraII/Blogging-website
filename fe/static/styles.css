@@ -2,3 +2,8 @@
   color: rgb(255, 0, 0);
   height: 14px;
 }
+
+.text-success {
+  color: green;
+  height: 12px;
+}
