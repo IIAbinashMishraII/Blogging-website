@@ -47,12 +47,12 @@ const Category = () => {
     });
   };
 
-  const deleteConfirm = (slug) => {
+  const deleteConfirm = async (slug) => {
     let answer = window.confirm(
       "Are you sure you want to delete this category?"
     );
     if (answer) {
-      deleteCategory(slug);
+      await deleteCategory(slug);
     }
   };
 
@@ -78,15 +78,19 @@ const Category = () => {
     e.preventDefault();
     // console.log('create category', name);
     try {
-      await create({ name }, token);
-      setValues({
-        ...values,
-        error: false,
-        success: true,
-        name: "",
-        removed: false,
-        reload: !reload,
-      });
+      let data = await create({ name }, token);
+      if (data.error) {
+        setValues({ ...values, error: data.error, success: false });
+      } else {
+        setValues({
+          ...values,
+          error: false,
+          success: true,
+          name: "",
+          removed: false,
+          reload: !reload,
+        });
+      }
     } catch (err) {
       console.error("Error creating category:", err);
       setValues({
@@ -103,9 +107,10 @@ const Category = () => {
       name: e.target.value,
       error: false,
       success: false,
-      removed: '',
+      removed: "",
     });
   };
+  //console.log(success, error, removed);
   const showSuccess = () =>
     success && <p className="text-success">Category is created</p>;
 
@@ -116,7 +121,7 @@ const Category = () => {
     removed && <p className="text-danger">Category is removed</p>;
 
   const mouseMoveHandler = () => {
-    setValues({ ...values, error: false, success: false, removed: '' });
+    setValues({ ...values, error: false, success: false, removed: "" });
   };
 
   const newCategoryForm = () => (
