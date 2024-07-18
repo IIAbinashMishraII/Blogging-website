@@ -33,15 +33,15 @@ const Tag = () => {
   };
 
   const showTags = () => {
-    return tags.map((c, i) => {
+    return tags.map((t, i) => {
       return (
         <button
-          onDoubleClick={() => deleteConfirm(c.slug)}
+          onDoubleClick={() => deleteConfirm(t.slug)}
           title="Double click to delete"
           key={i}
-          className="btn btn-outline-primary mr-1 ml-1 mt-3"
+          className="btn btn-outline-primary text-danger"
         >
-          {c.name}
+          {t.name}
         </button>
       );
     });
@@ -132,7 +132,7 @@ const Tag = () => {
         />
       </div>
       <div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-primary my-3">
           Create
         </button>
       </div>

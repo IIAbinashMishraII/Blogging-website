@@ -14,7 +14,7 @@ export default function Document() {
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
         />
-        <link rel="stylesheet" href="../static/styles.css"/>
+        <link rel="stylesheet" href="../../static/styles.css"/>
       </Head>
       <body>
         <Main />

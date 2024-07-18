@@ -31,9 +31,9 @@ const AdminIndex = () => {
                   </Link>
                 </ListItem>
                 <ListItem disablePadding>
-                  <Link href="/crud/category-tag">
+                  <Link href="/admin/crud/category-tag">
                     <ListItemButton>
-                      <a>Create category</a>
+                      <a>Create Tag</a>
                     </ListItemButton>
                   </Link>
                 </ListItem>

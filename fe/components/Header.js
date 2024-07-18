@@ -116,7 +116,8 @@ function DrawerAppBar(props) {
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
       {loading && (
-        <LinearProgress className="loadingBar"
+        <LinearProgress
+          className="loadingBar"
           sx={{ width: "100%", position: "fixed", top: 0, zIndex: 1301 }}
         />
       )}

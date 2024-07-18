@@ -1,9 +1,10 @@
-.loadingBar .MuiLinearProgress-bar {
-  color: rgb(255, 0, 0);
-  height: 14px;
+body {
+  background-color: rgb(255, 228, 198);
 }
 
-.text-success {
-  color: green;
-  height: 12px;
+.loadingBar {
+  /* background-color: rgb(255, 0, 0); */
+  height: 5px;
+  color: wheat;
 }
+
