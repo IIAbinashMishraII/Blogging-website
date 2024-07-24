@@ -1,0 +1,31 @@
+body {
+  background-color: rgb(255, 255, 255);
+}
+
+.loadingBar {
+  /* background-color: rgb(255, 0, 0); */
+  height: 5px;
+  color: wheat;
+}
+
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.layout-content {
+  flex: 1;
+  padding-top: 64px; /* Adjust based on your Header height */
+  padding-bottom: 100px; /* Adjust based on your Footer height */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.ql-editor {
+  min-height: 300px;
+}
