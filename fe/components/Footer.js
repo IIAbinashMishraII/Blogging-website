@@ -6,7 +6,7 @@ import TelegramIcon from '@mui/icons-material/Telegram';
 import EmailIcon from '@mui/icons-material/Email';
 import GitHubIcon from '@mui/icons-material/GitHub';
 
-export default function LabelBottomNavigation() {
+export default function Footer() {
   const [value, setValue] = React.useState("recents");
 
   const handleChange = (event, newValue) => {
@@ -19,8 +19,8 @@ export default function LabelBottomNavigation() {
         position: "fixed",
         bottom: 0,
         width: "100%",
-        height: 100,
-        textAlign: "center",
+        height: 50,
+        textAlign: "end",
       }}
       value={value}
       onChange={handleChange}

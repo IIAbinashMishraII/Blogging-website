@@ -24,7 +24,7 @@ const drawerWidth = 240;
 const navItems = ["Signup", "Signin"];
 const navRoutes = ["/signup", "/signin"];
 
-function DrawerAppBar(props) {
+function Header(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const router = useRouter();
@@ -205,8 +205,8 @@ function DrawerAppBar(props) {
   );
 }
 
-DrawerAppBar.propTypes = {
+Header.propTypes = {
   window: PropTypes.func,
 };
 
-export default DrawerAppBar;
+export default Header;

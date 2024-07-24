@@ -1,14 +1,20 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Header from "./Header";
 import Footer from "./Footer";
 
 const Layout = ({ children }) => {
   return (
-    <React.Fragment>
+    <div className="layout-container">
       <Header />
-      {children}
+      <main className="layout-content">{children}</main>
       <Footer />
-    </React.Fragment>
+    </div>
   );
 };
+
+Layout.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 export default Layout;

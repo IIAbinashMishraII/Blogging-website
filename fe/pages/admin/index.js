@@ -37,6 +37,13 @@ const AdminIndex = () => {
                     </ListItemButton>
                   </Link>
                 </ListItem>
+                <ListItem disablePadding>
+                  <Link href="/admin/crud/blog">
+                    <ListItemButton>
+                      <a>Create Blog</a>
+                    </ListItemButton>
+                  </Link>
+                </ListItem>
               </List>
             </div>
             <div className="col-md-8">right</div>
