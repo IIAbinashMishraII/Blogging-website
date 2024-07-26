@@ -21,8 +21,8 @@ import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 
 const drawerWidth = 240;
-const navItems = ["Signup", "Signin"];
-const navRoutes = ["/signup", "/signin"];
+const navItems = ["Signup", "Signin", "Blogs"];
+const navRoutes = ["/signup", "/signin", "/blogs"];
 
 function Header(props) {
   const { window } = props;
@@ -88,18 +88,12 @@ function Header(props) {
         {isAuthenticated && (
           <>
             <ListItem disablePadding>
-              <ListItemButton
-                sx={{ textAlign: "center" }}
-                onClick={handleSignout}
-              >
+              <ListItemButton sx={{ textAlign: "center" }} onClick={handleSignout}>
                 <ListItemText primary="Signout" />
               </ListItemButton>
             </ListItem>
             <ListItem disablePadding>
-              <ListItemButton
-                sx={{ textAlign: "center" }}
-                onClick={handleDashboard}
-              >
+              <ListItemButton sx={{ textAlign: "center" }} onClick={handleDashboard}>
                 <ListItemText primary="Dashboard" />
               </ListItemButton>
             </ListItem>
@@ -109,8 +103,7 @@ function Header(props) {
     </Box>
   );
 
-  const container =
-    window !== undefined ? () => window().document.body : undefined;
+  const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box sx={{ display: "flex" }}>

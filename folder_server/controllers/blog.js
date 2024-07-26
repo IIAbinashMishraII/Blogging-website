@@ -5,13 +5,15 @@ const formidable = require("formidable");
 const slugify = require("slugify");
 const fs = require("fs");
 const { errorHandler } = require("../middlewares/dbErrorHandler");
-const sanitizeHtml = require("sanitize-html");
-const { smartTrim } = require("../middlewares/blogHandler");
-
-// Configuration constants
-const MAX_FILE_SIZE = 1000000;
-const MIN_BODY_LENGTH = 200;
-const META_DESCRIPTION_LENGTH = 160;
+const {
+  validateInputs,
+  validatePhoto,
+  generateUniqueSlug,
+  createBlogData,
+  updateBlogData,
+  validateUpdatedInputs,
+  determineContentType,
+} = require("../middlewares/blogHandler");
 
 exports.create = async (req, res) => {
   const form = new formidable.IncomingForm();
@@ -74,94 +76,6 @@ exports.create = async (req, res) => {
   }
 };
 
-function validateInputs(fields) {
-  const title = fields.title && fields.title[0] ? fields.title[0] : "";
-  const body = fields.body && fields.body[0] ? fields.body[0] : "";
-  let categories, tags;
-
-  try {
-    categories =
-      fields.categories && fields.categories[0] ? parseStringToArray(fields.categories[0]) : [];
-    tags = fields.tags && fields.tags[0] ? parseStringToArray(fields.tags[0]) : [];
-  } catch (error) {
-    return { isValid: false, error: "Invalid format for categories or tags" };
-  }
-
-  if (!title || title.length === 0) {
-    return { isValid: false, error: "Title is required" };
-  }
-  if (!body || body.length < MIN_BODY_LENGTH) {
-    return {
-      isValid: false,
-      error: `Content must be at least ${MIN_BODY_LENGTH} characters long`,
-    };
-  }
-  if (!Array.isArray(categories) || categories.length === 0) {
-    return { isValid: false, error: "At least one category is required" };
-  }
-  if (!Array.isArray(tags) || tags.length === 0) {
-    return { isValid: false, error: "At least one tag is required" };
-  }
-
-  return {
-    isValid: true,
-    title: sanitizeHtml(title),
-    body: sanitizeHtml(body),
-    categories,
-    tags,
-  };
-}
-
-function parseStringToArray(str) {
-  return str
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-async function generateUniqueSlug(title) {
-  const baseSlug = slugify(title).toLowerCase();
-  let slug = baseSlug;
-  let suffix = 1;
-
-  while (await Blog.findOne({ slug })) {
-    slug = `${baseSlug}-${suffix}`;
-    suffix++;
-  }
-
-  return slug;
-}
-
-function createBlogData(validatedData, slug, userId, stripHtml) {
-  return {
-    title: validatedData.title,
-    body: validatedData.body,
-    slug,
-    mtitle: `${validatedData.title} | ${process.env.APP_NAME}`,
-    mdesc: stripHtml(validatedData.body.substring(0, META_DESCRIPTION_LENGTH)).result,
-    postedBy: userId,
-    categories: validatedData.categories,
-    tags: validatedData.tags,
-    excerpt: smartTrim(validatedData.body, 320, " ", "..."),
-  };
-}
-
-function validatePhoto(photo) {
-  if (Array.isArray(photo)) {
-    photo = photo[0]; // Will see afterwards
-  }
-  if (!photo || !photo.size) {
-    return { isValid: false, error: "Invalid photo file" };
-  }
-  if (photo.size > MAX_FILE_SIZE) {
-    return {
-      isValid: false,
-      error: `Image should be less than ${MAX_FILE_SIZE / 1000000} MB in size`,
-    };
-  }
-  return { isValid: true };
-}
-
 exports.list = async (req, res) => {
   const data = await Blog.find({})
     .populate("categories", "_id name slug")
@@ -175,6 +89,7 @@ exports.list = async (req, res) => {
     return res.json(data);
   }
 };
+
 exports.listEverything = async (req, res) => {
   let limit = req.body.limit ? parseInt(req.body.limit) : 10;
   let skip = req.body.limit ? parseInt(req.body.skip) : 0;
@@ -208,6 +123,7 @@ exports.listEverything = async (req, res) => {
     }
   }
 };
+
 exports.read = async (req, res) => {
   const slug = req.params.slug.toLowerCase();
   blogData = await Blog.findOne({ slug })
@@ -234,15 +150,16 @@ exports.remove = async (req, res) => {
 
 exports.update = async (req, res) => {
   const slug = req.params.slug.toLowerCase();
-  blogData = await Blog.findOneAndDelete({ slug });
-  if (blogData.error) {
-    return res.json({ error: errorHandler(err) });
-  }
-  const form = new formidable.IncomingForm();
-  form.keepExtensions = true;
-
   try {
-    const { stripHtml } = await import("string-strip-html"); //stupid dynamic import
+    const { stripHtml } = await import("string-strip-html");
+
+    const existingBlog = await Blog.findOne({ slug });
+    if (!existingBlog) {
+      return res.status(400).json({ error: "Blog not found" });
+    }
+
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
 
     const { fields, files } = await new Promise((resolve, reject) => {
       form.parse(req, (err, fields, files) => {
@@ -251,14 +168,19 @@ exports.update = async (req, res) => {
       });
     });
 
-    const validatedData = validateInputs(fields);
-
+    const validatedData = validateUpdatedInputs(fields, existingBlog);
     if (!validatedData.isValid) {
       return res.status(400).json({ error: validatedData.error });
     }
+    let updatedBlogData = updateBlogData(validatedData, slug, req.auth._id, stripHtml);
 
-    const slug = await generateUniqueSlug(validatedData.title);
-    const blogData = createBlogData(validatedData, slug, req.auth._id, stripHtml);
+    //merging and ensuring the title and slug doesn't change
+    updatedBlogData = {
+      ...existingBlog.toObject(),
+      ...updatedBlogData,
+      slug: existingBlog.slug,
+      title: existingBlog.title,
+    };
 
     if (files.photo) {
       const photoValidation = validatePhoto(files.photo);
@@ -285,15 +207,30 @@ exports.update = async (req, res) => {
       }
     }
 
-    const blog = new Blog(blogData);
-    const savedBlog = await blog.save();
+    const updatedBlog = await Blog.findOneAndUpdate({ slug }, updatedBlogData, {
+      new: true,
+      runValidators: true,
+    });
+    if (!updatedBlog) {
+      return res.status(404).json({ error: "Blog not found" });
+    }
 
-    res.status(201).json({
-      message: "Blog posted successfully",
-      blog: savedBlog,
+    res.status(200).json({
+      message: "Blog updated successfully",
+      blog: updatedBlog,
     });
   } catch (err) {
-    console.error("Blog creation error:", err);
+    console.error("Blog update error:", err);
     res.status(400).json({ error: errorHandler(err) });
   }
+};
+
+exports.photo = async (req, res) => {
+  const slug = req.params.slug.toLowerCase();
+  const blogPhoto = await Blog.findOne({ slug }).select("photo");
+  if (!blogPhoto || !blogPhoto.photo) {
+    return res.status(404).json({ error: "Photo not found" });
+  }
+  res.set("Content-Type", determineContentType(blogPhoto.photo.data));
+  return res.send(blogPhoto.photo.data);
 };
