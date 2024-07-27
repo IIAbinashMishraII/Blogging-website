@@ -154,16 +154,20 @@ exports.validatePhoto = (photo) => {
 };
 
 exports.determineContentType = (buffer) => {
-  const byte1 = buffer[0];
-  const byte2 = buffer[1];
+  try {
+    const byte1 = buffer[0];
+    const byte2 = buffer[1];
 
-  if (byte1 === 0xff && byte2 === 0xd8) {
-    return "image/jpeg";
-  } else if (byte1 === 0x89 && byte2 === 0x50) {
-    return "image/png";
-  } else if (byte1 === 0x47 && byte2 === 0x49) {
-    return "image/gif";
-  } else {
-    return "application/octet-stream"; // Default to binary data
+    if (byte1 === 0xff && byte2 === 0xd8) {
+      return "image/jpeg";
+    } else if (byte1 === 0x89 && byte2 === 0x50) {
+      return "image/png";
+    } else if (byte1 === 0x47 && byte2 === 0x49) {
+      return "image/gif";
+    } else {
+      return "application/octet-stream"; // Default to binary data
+    }
+  } catch (error) {
+    console.log(error);
   }
 };

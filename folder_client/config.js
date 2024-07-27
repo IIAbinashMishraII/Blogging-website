@@ -1,7 +1,12 @@
 import getConfig from "next/config.js";
-const {publicRuntimeConfig} = getConfig();
+const { publicRuntimeConfig } = getConfig();
 
 export const API = publicRuntimeConfig.PRODUCTION
-  ? "https://blogged.com"
-  : "http://localhost:8000/api";
+  ? publicRuntimeConfig.API_DEV
+  : publicRuntimeConfig.API_PROD;
+
 export const APP_NAME = publicRuntimeConfig.APP_NAME;
+
+export const DOMAIN = publicRuntimeConfig.PRODUCTION
+  ? publicRuntimeConfig.DOMAIN_DEV
+  : publicRuntimeConfig.DOMAIN_PROD;

@@ -8,16 +8,22 @@ import moment from "moment";
 import Card from "../../components/blog/Card";
 
 const Blogs = ({ blogs, categories, tags, size }) => {
+  const head = () => {
+    <Head>
+      <Title>Blogs | {}</Title>
+    </Head>;
+  };
+
   const showAllCategories = () => {
-    return blogs.map((c, i) => (
+    return categories.map((c, i) => (
       <Link href={`/categories/${c.slug}`} key={i} className="btn btn-primary mr-1 ml-1 mt-3">
         {c.name}
       </Link>
     ));
   };
   const showAllTags = () => {
-    return blogs.map((t, i) => (
-      <Link href={`/categories/${t.slug}`} key={i} className="btn btn-primary mr-1 ml-1 mt-3">
+    return tags.map((t, i) => (
+      <Link href={`/tags/${t.slug}`} key={i} className="btn btn-primary mr-1 ml-1 mt-3">
         {t.name}
       </Link>
     ));
