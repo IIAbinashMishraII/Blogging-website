@@ -3,14 +3,24 @@ import Link from "next/link";
 import Layout from "../../components/Layout";
 import React, { useState } from "react";
 import { listEverythingBlog } from "../../actions/blog";
-import { API } from "../../config";
+import { API, DOMAIN, APP_NAME } from "../../config";
 import moment from "moment";
 import Card from "../../components/blog/Card";
+import { withRouter } from "next/router";
 
-const Blogs = ({ blogs, categories, tags, size }) => {
+const Blogs = ({ blogs, categories, tags, size, router }) => {
   const head = () => {
     <Head>
-      <Title>Blogs | {}</Title>
+      <Title>Blogs | {APP_NAME}</Title>
+      <meta name="description" content="Blogs on everything and anything." />
+      <link rel="canonical" href={`${DOMAIN}${router.pathname}`} />
+      <meta property="og:title" content={`Blogging my way up | ${APP_NAME}`} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={`${DOMAIN}${router.pathname}`} />
+      <meta property="og:site_name" content="website" />
+      <meta property="og:image" content="website" />
+      <meta property="og:image:secure_url" content="website" />
+      <meta property="og:image:type" content="website" />
     </Head>;
   };
 
@@ -66,11 +76,15 @@ const Blogs = ({ blogs, categories, tags, size }) => {
 
 Blogs.getInitialProps = async () => {
   const data = await listEverythingBlog();
-  if (data.error || !data) {
-    console.log(data.error);
-  } else {
-    return { blogs: data.blogs, categories: data.categories, tags: data.tags, size: data.size };
+  try {
+    if (data.error || !data) {
+      console.log(data.error);
+    } else {
+      return { blogs: data.blogs, categories: data.categories, tags: data.tags, size: data.size };
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 
-export default Blogs;
+export default withRouter(Blogs);

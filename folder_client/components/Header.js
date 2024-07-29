@@ -21,8 +21,8 @@ import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 
 const drawerWidth = 240;
-const navItems = ["Signup", "Signin", "Blogs"];
-const navRoutes = ["/signup", "/signin", "/blogs"];
+const navItems = ["Signup", "Signin"];
+const navRoutes = ["/signup", "/signin"];
 
 function Header(props) {
   const { window } = props;
@@ -76,15 +76,32 @@ function Header(props) {
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Divider />
       <List>
-        {navItems.map((item, index) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
-              <Link href={navRoutes[index]} passHref>
-                <ListItemText primary={item} />
-              </Link>
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <ListItem disablePadding>
+          <ListItemButton sx={{ textAlign: "center" }}>
+            <Link
+              href="/blogs"
+              passHref
+              style={{
+                width: "100%",
+                textAlign: "center",
+                textDecoration: "none",
+                color: "inherit",
+              }}
+            >
+              <ListItemText primary="Blogs" />
+            </Link>
+          </ListItemButton>
+        </ListItem>
+        {!isAuthenticated &&
+          navItems.map((item, index) => (
+            <ListItem key={item} disablePadding>
+              <ListItemButton sx={{ textAlign: "center" }}>
+                <Link href={navRoutes[index]} passHref>
+                  <ListItemText primary={item} />
+                </Link>
+              </ListItemButton>
+            </ListItem>
+          ))}
         {isAuthenticated && (
           <>
             <ListItem disablePadding>
@@ -152,6 +169,9 @@ function Header(props) {
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {isClientSide && (
               <>
+                <Link href="/blogs" passHref>
+                  <Button sx={{ color: "black" }}>Blogs</Button>
+                </Link>
                 {!isAuthenticated &&
                   navItems.map((item, index) => (
                     <Link href={navRoutes[index]} key={item} passHref>
