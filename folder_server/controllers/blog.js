@@ -100,6 +100,7 @@ exports.listEverything = async (req, res) => {
     .populate("postedBy", "_id name slug profile")
     .sort({ createdAt: -1 })
     .skip(skip)
+    .limit(limit)
     .select("_id title slug excerpt categories tags postedBy createdAt updatedAt");
   // console.log(blogData);
   if (blogData.error) {

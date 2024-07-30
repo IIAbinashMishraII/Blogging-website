@@ -33,15 +33,16 @@ export const listBlog = async (blog, token) => {
   }
 };
 
-export const listEverythingBlog = async (blog, token) => {
+export const listEverythingBlog = async (skip, limit) => {
   try {
+    const data = { limit, skip };
     const response = await fetch(`${API}/blog/ct`, {
       method: "POST",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      body: blog,
+      body: JSON.stringify(data),
     });
     return await response.json();
   } catch (err) {
