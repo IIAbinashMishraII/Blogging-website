@@ -132,7 +132,8 @@ exports.read = async (req, res) => {
     .populate("tags", "_id name slug")
     .populate("postedBy", "_id name slug")
     .select("_id title body slug categories tags postedBy createdAt updatedAt");
-  if (blogData.error) {
+  // console.log(blogData, slug);
+  if (blogData.error || !blogData) {
     return res.json({ error: errorHandler(blogData) });
   } else {
     return res.json(blogData);
