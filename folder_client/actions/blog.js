@@ -50,15 +50,13 @@ export const listEverythingBlog = async (skip, limit) => {
   }
 };
 
-export const readBlog = async (blog, token) => {
+export const readBlog = async (slug) => {
   try {
-    const response = await fetch(`${API}/blog/:slug`, {
+    const response = await fetch(`${API}/blog/${slug}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
-        Authorization: `Bearer ${token}`,
       },
-      body: blog,
     });
     return await response.json();
   } catch (err) {
@@ -66,9 +64,9 @@ export const readBlog = async (blog, token) => {
   }
 };
 
-export const removeBlog = async (blog, token) => {
+export const removeBlog = async (slug) => {
   try {
-    const response = await fetch(`${API}/blog/:slug`, {
+    const response = await fetch(`${API}/blog/${slug}`, {
       method: "DELETE",
       headers: {
         Accept: "application/json",
@@ -81,9 +79,9 @@ export const removeBlog = async (blog, token) => {
     return console.log(err);
   }
 };
-export const updateBlog = async (blog, token) => {
+export const updateBlog = async (slug) => {
   try {
-    const response = await fetch(`${API}/blog/:slug`, {
+    const response = await fetch(`${API}/blog/${slug}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",
@@ -96,9 +94,9 @@ export const updateBlog = async (blog, token) => {
     return console.log(err);
   }
 };
-export const photoBlog = async (blog, token) => {
+export const photoBlog = async (slug) => {
   try {
-    const response = await fetch(`${API}/blog/:slug`, {
+    const response = await fetch(`${API}/blog/${slug}`, {
       method: "GET",
       headers: {
         Accept: "application/json",

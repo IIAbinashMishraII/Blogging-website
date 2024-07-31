@@ -29,3 +29,8 @@ body {
 .ql-editor {
   min-height: 300px;
 }
+.featured-image {
+  width: 100%;
+  object-fit: cover;
+  height: 500px;
+}

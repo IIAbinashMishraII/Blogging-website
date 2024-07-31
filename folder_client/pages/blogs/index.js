@@ -4,7 +4,6 @@ import Layout from "../../components/Layout";
 import React, { useState } from "react";
 import { listEverythingBlog } from "../../actions/blog";
 import { API, DOMAIN, APP_NAME } from "../../config";
-import moment from "moment";
 import Card from "../../components/blog/Card";
 import { withRouter } from "next/router";
 
@@ -45,7 +44,7 @@ const Blogs = ({ blogs, categories, tags, totalBlogs, blogsLimit, blogsSkip, rou
     return (
       size > 0 &&
       size >= limit && (
-        <button onClick={loadMore} variant="contained" className="btn btn-primary btn-lg">
+        <button onClick={loadMore} variant="contained" className="btn btn-outline-primary btn-lg">
           Load More
         </button>
       )
@@ -61,7 +60,7 @@ const Blogs = ({ blogs, categories, tags, totalBlogs, blogsLimit, blogsSkip, rou
   };
   const showAllTags = () => {
     return tags.map((t, i) => (
-      <Link href={`/tags/${t.slug}`} key={i} className="btn btn-primary mr-1 ml-1 mt-3">
+      <Link href={`/tags/${t.slug}`} key={i} className="btn btn-outline-primary mr-1 ml-1 mt-3">
         {t.name}
       </Link>
     ));

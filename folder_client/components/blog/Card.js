@@ -2,7 +2,7 @@ import Link from "next/link";
 import React, { useState } from "react";
 import { API } from "../../config";
 import moment from "moment";
-import { maxHeaderSize } from "http";
+import parse from "html-react-parser";
 
 const Card = ({ blog }) => {
   const showBlogCategories = (blog) => {
@@ -53,7 +53,7 @@ const Card = ({ blog }) => {
         </div>
         <div className="col-md-8">
           <section>
-            <div className="pb-3">{blog.excerpt}</div>
+            <div className="pb-3">{parse(blog.excerpt)}</div>
             <Link href={`/blogs/${blog.slug}`} className="btn btn-primary pt-2">
               Read more ...
             </Link>
