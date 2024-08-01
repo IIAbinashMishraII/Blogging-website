@@ -16,7 +16,6 @@ export const createBlog = async (blog, token) => {
     return console.log(err);
   }
 };
-
 export const listBlog = async (blog, token) => {
   try {
     const response = await fetch(`${API}/blog`, {
@@ -32,7 +31,6 @@ export const listBlog = async (blog, token) => {
     return console.log(err);
   }
 };
-
 export const listEverythingBlog = async (skip, limit) => {
   try {
     const data = { limit, skip };
@@ -49,7 +47,21 @@ export const listEverythingBlog = async (skip, limit) => {
     return console.log(err);
   }
 };
-
+export const listRelatedBlog = async (blog) => {
+  try {
+    const response = await fetch(`${API}/blog/related`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(blog),
+    });
+    return await response.json();
+  } catch (err) {
+    return console.log(err);
+  }
+};
 export const readBlog = async (slug) => {
   try {
     const response = await fetch(`${API}/blog/${slug}`, {
@@ -63,7 +75,6 @@ export const readBlog = async (slug) => {
     return console.log(err);
   }
 };
-
 export const removeBlog = async (slug) => {
   try {
     const response = await fetch(`${API}/blog/${slug}`, {

@@ -125,13 +125,28 @@ exports.listEverything = async (req, res) => {
   }
 };
 
+exports.listRelated = async (req, res) => {
+  let limit = req.body.limit ? parseInt(req.body.limit) : 3;
+  const { _id, categories } = req.body.blog;
+  const data = await Blog.find({ _id: { $ne: _id }, categories: { $in: categories } })
+    .limit(limit)
+    .populate("postedBy", "_id name profile")
+    .select("title slug excerpt postedBy createdAt updatedAt");
+  if (!data || data.error) {
+    return res.status(400).json({
+      error: "Blogs not found",
+    });
+  }
+  return res.json(data);
+};
+
 exports.read = async (req, res) => {
   const slug = req.params.slug.toLowerCase();
   blogData = await Blog.findOne({ slug })
     .populate("categories", "_id name slug")
     .populate("tags", "_id name slug")
     .populate("postedBy", "_id name slug")
-    .select("_id title body slug categories tags postedBy createdAt updatedAt");
+    .select("_id title body slug mdesc categories tags postedBy createdAt updatedAt");
   // console.log(blogData, slug);
   if (blogData.error || !blogData) {
     return res.json({ error: errorHandler(blogData) });

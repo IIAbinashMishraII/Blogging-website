@@ -1,14 +1,45 @@
 import Head from "next/head";
 import Link from "next/link";
 import Layout from "../../components/Layout";
-import React, { useState } from "react";
-import { readBlog } from "../../actions/blog";
+import React, { useEffect, useState } from "react";
+import { listRelatedBlog, readBlog } from "../../actions/blog";
 import { API, DOMAIN, APP_NAME } from "../../config";
 import { withRouter } from "next/router";
 import moment from "moment";
 import parse from "html-react-parser";
+import RelatedCard from "../../components/blog/RelatedCard";
 
 const SingleBlog = ({ blog }) => {
+  // console.log(blog);
+  const [related, setRelated] = useState([]);
+  const loadRelated = async () => {
+    const data = await listRelatedBlog({ blog });
+    if (data.error) {
+      console.log(error);
+    } else {
+      setRelated(data);
+    }
+  };
+  useEffect(() => {
+    loadRelated();
+  }, []);
+
+  const head = () => (
+    <Head>
+      <title>{blog.title ? `${blog.title} | ${APP_NAME}` : `Blog | ${APP_NAME}`}</title>
+      <meta name="description" content={blog.mdesc} />
+      <link rel="canonical" href={`${DOMAIN}/blogs/${blog.slug}`} />
+      <meta property="og:title" content={`${blog.title} | ${APP_NAME}`} />
+      <meta property="og:description" content={blog.mdesc} />
+      <meta property="og:type" content="website" />
+      <meta property="og:url" content={`${DOMAIN}/blogs/${blog.slug}`} />
+      <meta property="og:site_name" content={APP_NAME} />
+      <meta property="og:image" content={`${API}/blog/photo/${blog.slug}`} />
+      <meta property="og:image:secure_url" content={`${API}/blog/photo/${blog.slug}`} />
+      <meta property="og:image:type" content="image/jpg" />
+    </Head>
+  );
+
   const showBlogCategories = (blog) => {
     return blog.categories.map((c, i) => (
       <Link
@@ -27,24 +58,19 @@ const SingleBlog = ({ blog }) => {
       </Link>
     ));
   };
+  const showRelatedBlogs = () => {
+    return related.map((b, i) => (
+      <div className="col-md-4" key={i}>
+        <article>
+          <RelatedCard blog={b}></RelatedCard>
+        </article>
+      </div>
+    ));
+  };
   return (
     <React.Fragment>
+      {head()}
       <Layout>
-        <Head>
-          <title>
-            {blog.title} | {APP_NAME}
-          </title>
-          <meta name="description" content={blog.mdesc} />
-          <link rel="canonical" href={`${DOMAIN}/blogs/${blog.slug}`} />
-          <meta property="og:title" content={`${blog.title} | ${APP_NAME}`} />
-          <meta property="og:description" content={blog.mdesc} />
-          <meta property="og:type" content="website" />
-          <meta property="og:url" content={`${DOMAIN}/blogs/${blog.slug}`} />
-          <meta property="og:site_name" content={APP_NAME} />
-          <meta property="og:image" content={`${API}/blog/photo/${blog.slug}`} />
-          <meta property="og:image:secure_url" content={`${API}/blog/photo/${blog.slug}`} />
-          <meta property="og:image:type" content="image/jpg" />
-        </Head>
         <main>
           <article>
             <div className="container-fluid">
@@ -75,7 +101,9 @@ const SingleBlog = ({ blog }) => {
               </div>
               <div className="container pb-5">
                 <h4 className="text-center pt-5 pb-5 h2">Related blogs</h4>
-                <hr />
+                <hr /> <div className="row">{showRelatedBlogs()}</div>
+              </div>
+              <div className="container pb-5">
                 <p>Show comments</p>
               </div>
             </div>
